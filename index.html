@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Name — Projects</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --accent:#6ee7b7; --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071229);color:#e6eef6}
+    .wrap{max-width:1100px;margin:36px auto;padding:24px}
+    header{display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:16px;align-items:center}
+    .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#34d399);display:flex;align-items:center;justify-content:center;color:#042024;font-weight:700}
+    h1{margin:0;font-size:1.6rem}
+    p.lead{margin:6px 0;color:var(--muted)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px}
+    main{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6);backdrop-filter: blur(6px)}
+    .card h3{margin:6px 0}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    .tag{background:var(--glass);padding:6px 8px;border-radius:999px;font-size:12px;color:var(--muted)}
+    .media{height:160px;border-radius:8px;overflow:hidden;background:#071326;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+    .small{font-size:13px;color:var(--muted)}
+    footer{margin-top:28px;color:var(--muted);font-size:13px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#34d399);color:#001; font-weight:600;text-decoration:none}
+    @media (max-width:640px){header{flex-direction:column;align-items:flex-start} .logo{width:56px;height:56px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">YN</div>
+        <div>
+          <h1>Your Name</h1>
+          <p class="lead">Computational paleontology · robotics · chips · bioinformatics — projects & demos.</p>
+        </div>
+      </div>
+      <nav>
+        <a href="#projects">Projects</a>
+        <a href="#about">About</a>
+        <a href="#contact" class="btn">Contact</a>
+      </nav>
+    </header>
+
+    <section id="projects" style="margin-top:18px">
+      <main>
+        <!-- Project card 1 -->
+        <article class="card">
+          <div class="media">
+            <!-- Replace with screenshot or GIF -->
+            <div style="text-align:center">
+              <strong>Demo GIF / Image</strong><div class="small">replace with a GIF</div>
+            </div>
+          </div>
+          <h3>Project title — Dinosaur Scan Viewer</h3>
+          <div class="tags">
+            <span class="tag">Python</span>
+            <span class="tag">3D photogrammetry</span>
+            <span class="tag">Blender</span>
+          </div>
+          <p class="small">Short blurb: scanned a replica fossil, cleaned the mesh, and built a web viewer to manipulate landmarks and measure morphology.</p>
+          <p style="margin-top:12px">
+            <a href="https://github.com/yourusername/project-repo" target="_blank" rel="noopener" class="small">View code →</a>
+            <span style="float:right"><a class="btn" href="#">Live demo</a></span>
+          </p>
+        </article>
+
+        <!-- Project card 2 -->
+        <article class="card">
+          <div class="media"><div style="text-align:center"><strong>Robot Demo</strong><div class="small">video or gif</div></div></div>
+          <h3>Robotic gripper for fossil handling</h3>
+          <div class="tags"><span class="tag">Arduino</span><span class="tag">C++</span><span class="tag">mechanical</span></div>
+          <p class="small">Prototype gripper that gently handles model bones; integrated sensor feedback to avoid crush force.</p>
+          <p style="margin-top:12px"><a href="https://github.com/yourusername/robot-gripper" target="_blank" rel="noopener" class="small">Code</a></p>
+        </article>
+
+        <!-- Add more cards similarly -->
+      </main>
+    </section>
+
+    <section id="about" style="margin-top:24px">
+      <div class="card" style="padding:18px">
+        <h2 style="margin-top:0">About</h2>
+        <p class="small">A short paragraph about you — your focus areas, what you build, and what you want to learn next. Mention relevant coursework / awards / where you volunteer (museum or lab).</p>
+      </div>
+    </section>
+
+    <section id="contact" style="margin-top:18px">
+      <div class="card">
+        <h3>Contact & Resume</h3>
+        <p class="small">Email: <a href="mailto:you@example.com">you@example.com</a></p>
+        <p class="small">Download resume: <a href="/resume.pdf">resume.pdf</a></p>
+        <p class="small">Links: <a href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub</a></p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="small">Made by Your Name — built with plain HTML/CSS. Hosted on GitHub Pages (or your host of choice).</div>
+    </footer>
+  </div>
+</body>
+</html>
