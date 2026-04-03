@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Project Nexus — Dino·Code·DNA</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #06080a;
+    --bg2:       #0c1014;
+    --amber:     #e8920a;
+    --amber-lt:  #ffc14d;
+    --neon:      #3dffa0;
+    --cyan:      #00d4f5;
+    --dna:       #b44fff;
+    --chem:      #ff5733;
+    --idea:      #ffd700;
+    --fossil:    #a07840;
+    --muted:     #4a5568;
+    --text:      #d4cfc8;
+    --text-dim:  #7a7570;
+    --card-bg:   #0e1318;
+    --border:    rgba(232,146,10,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── Custom Cursor ── */
+  .cursor {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    pointer-events: none;
+    mix-blend-mode: difference;
+  }
+  .cursor-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber-lt);
+    transform: translate(-50%,-50%);
+    transition: transform .1s;
+  }
+  .cursor-ring {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid var(--amber);
+    transform: translate(-50%,-50%);
+    transition: transform .18s ease, width .2s, height .2s;
+  }
+
+  /* ── Canvas BG ── */
+  #bg-canvas {
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none; opacity: .55;
+  }
+
+  /* ── Layout ── */
+  .page { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: linear-gradient(to bottom, rgba(6,8,10,.95), transparent);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(6px);
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900; font-size: 1.1rem;
+    color: var(--amber-lt);
+    letter-spacing: .2em;
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--neon); }
+
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: .72rem; letter-spacing: .15em;
+    color: var(--text-dim); text-decoration: none;
+    text-transform: uppercase;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--amber-lt); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 0 80px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: .72rem; letter-spacing: .3em;
+    color: var(--neon); text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: fadeUp .8s both;
+  }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(2.8rem, 7vw, 6rem);
+    line-height: 1.05;
+    color: #fff;
+    animation: fadeUp .9s .1s both;
+  }
+
+  .hero-title .amber  { color: var(--amber); }
+  .hero-title .neon   { color: var(--neon); }
+  .hero-title .dna    { color: var(--dna); }
+
+  .hero-sub {
+    margin-top: 28px;
+    max-width: 540px;
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    animation: fadeUp 1s .2s both;
+  }
+
+  .hero-cta {
+    margin-top: 40px;
+    display: flex; gap: 16px;
+    animation: fadeUp 1s .35s both;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 13px 32px;
+    font-family: 'Orbitron', monospace;
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: .18em; text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    cursor: none;
+    transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: #000;
+    box-shadow: 0 0 28px rgba(232,146,10,.45);
+  }
+  .btn-primary:hover {
+    background: var(--amber-lt);
+    box-shadow: 0 0 40px rgba(255,193,77,.6);
+    transform: translateY(-2px);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+  }
+  .btn-ghost:hover {
+    background: rgba(61,255,160,.1);
+    transform: translateY(-2px);
+  }
+
+  /* Dino silhouette */
+  .hero-dino {
+    position: absolute; right: -20px; bottom: 0;
+    height: 78vh; opacity: .07;
+    pointer-events: none;
+    filter: sepia(1) hue-rotate(20deg);
+  }
+
+  /* amber scan line */
+  .hero-scanline {
+    position: absolute; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    animation: scan 4s linear infinite;
+    opacity: .3;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 100px 80px; }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; letter-spacing: .35em;
+    text-transform: uppercase; color: var(--amber);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.6rem, 3vw, 2.6rem);
+    font-weight: 700; color: #fff;
+    margin-bottom: 48px;
+  }
+  .section-title em { font-style: normal; color: var(--neon); }
+
+  /* ── CATEGORIES ── */
+  #categories { padding: 60px 80px 0; }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .cat-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px 20px;
+    background: var(--card-bg);
+    cursor: none;
+    transition: all .25s;
+    position: relative; overflow: hidden;
+  }
+  .cat-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--glow-color, var(--amber));
+    opacity: 0;
+    transition: opacity .25s;
+  }
+  .cat-card:hover::before { opacity: .07; }
+  .cat-card:hover { border-color: var(--glow-color, var(--amber)); transform: translateY(-4px); }
+
+  .cat-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .cat-name {
+    font-family: 'Orbitron', monospace;
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: .12em; color: #fff;
+    text-transform: uppercase;
+  }
+  .cat-count {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 40px;
+  }
+  .filter-btn {
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--muted);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; letter-spacing: .1em;
+    text-transform: uppercase;
+    cursor: none;
+    transition: all .2s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--amber);
+    color: var(--amber);
+    background: rgba(232,146,10,.08);
+  }
+
+  /* ── PROJECT GRID ── */
+  .proj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .proj-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: none;
+    transition: all .3s;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+  .proj-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 48px rgba(0,0,0,.6);
+    border-color: var(--card-accent, var(--amber));
+  }
+
+  .proj-thumb {
+    height: 180px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 4rem;
+    position: relative; overflow: hidden;
+  }
+  .proj-thumb::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, var(--card-bg));
+  }
+
+  .proj-body { padding: 20px 22px 24px; flex: 1; }
+
+  .proj-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: .58rem; letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,.06);
+    color: var(--tag-color, var(--amber));
+    border: 1px solid var(--tag-color, var(--amber));
+  }
+
+  .proj-name {
+    font-family: 'Orbitron', monospace;
+    font-size: .95rem; font-weight: 700;
+    color: #fff; margin-bottom: 8px;
+  }
+  .proj-desc {
+    font-size: .92rem; color: var(--text-dim);
+    font-weight: 300; line-height: 1.5;
+  }
+
+  .proj-footer {
+    padding: 14px 22px;
+    border-top: 1px solid rgba(255,255,255,.05);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .proj-status {
+    font-family: 'Space Mono', monospace;
+    font-size: .6rem; letter-spacing: .12em;
+    color: var(--neon); text-transform: uppercase;
+  }
+  .proj-status.wip { color: var(--amber); }
+  .proj-status.idea { color: var(--idea); }
+
+  .proj-link {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; color: var(--amber);
+    text-decoration: none;
+    letter-spacing: .1em;
+    transition: color .2s;
+    cursor: none;
+  }
+  .proj-link:hover { color: var(--amber-lt); }
+
+  /* ── ABOUT / BIO ── */
+  #about { background: var(--bg2); border-top: 1px solid var(--border); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 80px; align-items: center;
+  }
+  .about-visual {
+    position: relative;
+    height: 360px;
+  }
+  /* DNA Helix CSS */
+  .dna-wrap {
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%,-50%);
+    width: 80px; height: 300px;
+  }
+  .dna-strand {
+    position: absolute; width: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 0;
+  }
+  .dna-rung {
+    display: flex; align-items: center;
+    width: 100%; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .dna-node {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--dna);
+    box-shadow: 0 0 8px var(--dna);
+    animation: dnaPulse 2s ease-in-out infinite alternate;
+  }
+  .dna-node:nth-child(3n) { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); animation-delay: .4s; }
+  .dna-node:nth-child(5n) { background: var(--neon); box-shadow: 0 0 8px var(--neon); animation-delay: .8s; }
+  .dna-bar {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--dna), var(--cyan));
+    opacity: .5;
+    animation: barPulse 2s ease-in-out infinite alternate;
+  }
+  .dna-spiral-l, .dna-spiral-r {
+    position: absolute; top: 0; width: 3px; height: 100%;
+    border-radius: 100px;
+  }
+  .dna-spiral-l {
+    left: 0; background: linear-gradient(to bottom, var(--dna), var(--neon), var(--dna));
+    animation: spiralL 3s ease-in-out infinite alternate;
+  }
+  .dna-spiral-r {
+    right: 0; background: linear-gradient(to bottom, var(--neon), var(--dna), var(--neon));
+    animation: spiralR 3s ease-in-out infinite alternate;
+  }
+
+  .about-text h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem; color: #fff; margin-bottom: 16px;
+  }
+  .about-text p {
+    color: var(--text-dim); margin-bottom: 16px; font-weight: 300;
+  }
+  .about-tags {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px;
+  }
+  .about-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem; letter-spacing: .1em;
+    padding: 5px 14px; border-radius: 3px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    color: var(--text-dim);
+  }
+
+  /* ── CONTACT / FOOTER ── */
+  footer {
+    padding: 60px 80px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: .9rem; font-weight: 900;
+    color: var(--amber-lt); letter-spacing: .15em;
+  }
+  .footer-logo span { color: var(--neon); }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: .62rem; color: var(--text-dim);
+  }
+  .footer-socials { display: flex; gap: 20px; }
+  .footer-socials a {
+    font-family: 'Space Mono', monospace;
+    font-size: .65rem; letter-spacing: .1em;
+    color: var(--text-dim); text-decoration: none;
+    text-transform: uppercase; transition: color .2s;
+    cursor: none;
+  }
+  .footer-socials a:hover { color: var(--amber); }
+
+  /* ── CONTACT SECTION ── */
+  #contact { text-align: center; }
+  #contact .section-title { margin-bottom: 16px; }
+  .contact-sub { color: var(--text-dim); max-width: 500px; margin: 0 auto 40px; }
+  .contact-email {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem; color: var(--amber);
+    text-decoration: none; letter-spacing: .08em;
+    border-bottom: 1px solid var(--amber);
+    padding-bottom: 2px;
+    cursor: none;
+    transition: color .2s, border-color .2s;
+  }
+  .contact-email:hover { color: var(--amber-lt); border-color: var(--amber-lt); }
+
+  /* ── DIVIDER ── */
+  .amber-rule {
+    width: 80px; height: 2px;
+    background: linear-gradient(90deg, var(--amber), var(--neon));
+    margin: 0 0 28px;
+    border-radius: 1px;
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s, transform .7s; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes scan {
+    0%   { top: 0%; }
+    100% { top: 100%; }
+  }
+  @keyframes dnaPulse {
+    from { opacity: .6; transform: scale(1); }
+    to   { opacity: 1;  transform: scale(1.3); }
+  }
+  @keyframes barPulse {
+    from { opacity: .2; }
+    to   { opacity: .7; }
+  }
+  @keyframes spiralL {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0.2); }
+  }
+  @keyframes spiralR {
+    from { transform: scaleX(0.2); }
+    to   { transform: scaleX(1); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section, #categories, footer { padding-left: 24px; padding-right: 24px; }
+    .hero { padding: 0 24px; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-visual { height: 200px; }
+    .proj-grid { grid-template-columns: 1fr; }
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: .025;
+    background-size: 200px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor">
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+</div>
+
+<!-- Animated BG Canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="page">
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">PROJECT<span>NEXUS</span></a>
+    <ul class="nav-links">
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-scanline"></div>
+    <p class="hero-eyebrow">// Science · Code · Discovery</p>
+    <h1 class="hero-title">
+      Where<br>
+      <span class="amber">Dinosaurs</span><br>
+      Meet <span class="neon">Code</span><br>
+      &amp; <span class="dna">DNA</span>
+    </h1>
+    <p class="hero-sub">
+      A lab notebook of experiments, inventions, and obsessions — from Cretaceous fossils 
+      to circuit-board robots, gene editing to chemical reactions, and every wild idea in between.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">Explore Projects</a>
+      <a href="#about"    class="btn btn-ghost">About Me</a>
+    </div>
+
+    <!-- SVG T-Rex silhouette -->
+    <svg class="hero-dino" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" fill="var(--amber)">
+      <!-- Simplified T-Rex shape -->
+      <ellipse cx="280" cy="160" rx="70" ry="50"/>
+      <ellipse cx="320" cy="130" rx="50" ry="35"/>
+      <rect x="300" y="110" width="90" height="30" rx="15"/>
+      <ellipse cx="395" cy="120" rx="18" ry="14"/>
+      <rect x="260" y="200" width="40" height="120" rx="8"/>
+      <rect x="300" y="200" width="40" height="120" rx="8"/>
+      <rect x="255" y="310" width="12" height="60" rx="4"/>
+      <rect x="275" y="310" width="12" height="60" rx="4"/>
+      <rect x="295" y="310" width="12" height="60" rx="4"/>
+      <rect x="315" y="310" width="12" height="60" rx="4"/>
+      <rect x="230" y="170" width="60" height="25" rx="12"/>
+      <rect x="240" y="188" width="10" height="30" rx="4"/>
+      <ellipse cx="200" cy="240" rx="80" ry="40"/>
+      <rect x="140" y="270" width="130" height="20" rx="6"/>
+    </svg>
+  </section>
+
+  <!-- CATEGORY OVERVIEW -->
+  <div id="categories">
+    <div class="cat-grid">
+      <div class="cat-card" style="--glow-color:var(--amber)">
+        <span class="cat-icon">🦕</span>
+        <div class="cat-name">Dinosaurs</div>
+        <div class="cat-count">Paleontology &amp; Beyond</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--fossil)">
+        <span class="cat-icon">🪨</span>
+        <div class="cat-name">Fossils</div>
+        <div class="cat-count">Ancient Life &amp; Specimens</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--neon)">
+        <span class="cat-icon">💻</span>
+        <div class="cat-name">Coding</div>
+        <div class="cat-count">Software &amp; Algorithms</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--cyan)">
+        <span class="cat-icon">🤖</span>
+        <div class="cat-name">Chip Robots</div>
+        <div class="cat-count">Hardware &amp; AI</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--dna)">
+        <span class="cat-icon">🧬</span>
+        <div class="cat-name">DNA / Genes</div>
+        <div class="cat-count">Biotech &amp; Editing</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--chem)">
+        <span class="cat-icon">⚗️</span>
+        <div class="cat-name">Chemistry</div>
+        <div class="cat-count">Reactions &amp; Materials</div>
+      </div>
+      <div class="cat-card" style="--glow-color:var(--idea)">
+        <span class="cat-icon">💡</span>
+        <div class="cat-name">Inventions</div>
+        <div class="cat-count">Ideas &amp; Concepts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label reveal">// Project Archive</p>
+    <h2 class="section-title reveal">All <em>Projects</em></h2>
+    <div class="amber-rule reveal"></div>
+
+    <div class="filter-bar reveal" id="filterBar">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="dino">🦕 Dino</button>
+      <button class="filter-btn" data-filter="fossil">🪨 Fossil</button>
+      <button class="filter-btn" data-filter="code">💻 Code</button>
+      <button class="filter-btn" data-filter="robot">🤖 Robots</button>
+      <button class="filter-btn" data-filter="dna">🧬 DNA</button>
+      <button class="filter-btn" data-filter="chem">⚗️ Chem</button>
+      <button class="filter-btn" data-filter="idea">💡 Idea</button>
+    </div>
+
+    <div class="proj-grid" id="projGrid">
+
+      <!-- SAMPLE CARDS — replace with your own! -->
+      <article class="proj-card" data-cat="dino" style="--card-accent:var(--amber)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#1a0f00,#3a2000)">🦖</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--amber)">Dinosaurs</span>
+          <h3 class="proj-name">T-Rex Biomechanics Model</h3>
+          <p class="proj-desc">Reconstructing T-Rex running gait using skeletal data and physics simulation. How fast could it really go?</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status wip">In Progress</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="dna" style="--card-accent:var(--dna)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#1a0030,#2a0050)">🧬</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--dna)">DNA / Genes</span>
+          <h3 class="proj-name">CRISPR Target Finder</h3>
+          <p class="proj-desc">A tool to identify viable CRISPR-Cas9 cut sites in animal genomes, with off-target risk scoring.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status">Complete</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="code" style="--card-accent:var(--neon)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#001a0d,#003020)">⚡</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--neon)">Coding</span>
+          <h3 class="proj-name">Fossil Classification AI</h3>
+          <p class="proj-desc">Machine learning model trained on 50k+ paleontology images to identify species from fossil photographs.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status">Complete</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="robot" style="--card-accent:var(--cyan)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#001a22,#002535)">🤖</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--cyan)">Chip Robots</span>
+          <h3 class="proj-name">DinoBot MK-I</h3>
+          <p class="proj-desc">Arduino-powered quadruped robot mimicking dinosaur locomotion patterns extracted from paleoartist reconstructions.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status wip">In Progress</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="fossil" style="--card-accent:var(--fossil)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#150e00,#25180a)">🪨</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--fossil)">Fossils</span>
+          <h3 class="proj-name">Amber Inclusion Database</h3>
+          <p class="proj-desc">Cataloguing organisms preserved in Cretaceous amber, cross-referenced with modern phylogenetic trees.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status">Complete</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="chem" style="--card-accent:var(--chem)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#1a0800,#2a1000)">⚗️</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--chem)">Chemistry</span>
+          <h3 class="proj-name">Biomineralization Study</h3>
+          <p class="proj-desc">Investigating the chemistry behind bone fossilization — how mineral substitution preserves structure over 65M years.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status">Complete</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="idea" style="--card-accent:var(--idea)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#1a1600,#2a2400)">💡</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--idea)">Invention</span>
+          <h3 class="proj-name">Paleo-Tourism VR Platform</h3>
+          <p class="proj-desc">A VR business concept for immersive Cretaceous environment experiences, built on scientifically accurate dino reconstructions.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status idea">Concept</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="dino dna" style="--card-accent:var(--dna)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#180030,#0a2000)">🧪</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--dna)">DNA + Dino</span>
+          <h3 class="proj-name">Avian Atavism Gene Map</h3>
+          <p class="proj-desc">Mapping dormant ancestral genes in modern birds that could theoretically re-express dinosaur-like traits.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status wip">Research</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <article class="proj-card" data-cat="code robot" style="--card-accent:var(--cyan)">
+        <div class="proj-thumb" style="background:linear-gradient(135deg,#000f1a,#001a28)">🖥️</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--cyan)">Code + Hardware</span>
+          <h3 class="proj-name">NeuralChip Debugger</h3>
+          <p class="proj-desc">A visual debugger for neuromorphic computing chips — displays firing patterns as living neural maps in real-time.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status">Complete</span>
+          <a href="#" class="proj-link">View →</a>
+        </div>
+      </article>
+
+      <!-- ADD YOUR OWN CARD HERE -->
+      <article class="proj-card" data-cat="" style="--card-accent:var(--muted); border-style: dashed; opacity:.5">
+        <div class="proj-thumb" style="background:rgba(255,255,255,.02); font-size:2rem">＋</div>
+        <div class="proj-body">
+          <span class="proj-tag" style="--tag-color:var(--muted)">Your Project</span>
+          <h3 class="proj-name">Add Your Project Here</h3>
+          <p class="proj-desc">Duplicate this card and fill in your own title, description, category, and thumbnail emoji or image.</p>
+        </div>
+        <div class="proj-footer">
+          <span class="proj-status" style="color:var(--muted)">Template</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-visual">
+        <!-- DNA Helix -->
+        <div class="dna-wrap">
+          <div class="dna-spiral-l"></div>
+          <div class="dna-spiral-r"></div>
+          <div class="dna-strand">
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+            <div class="dna-rung"><div class="dna-node"></div><div class="dna-bar"></div><div class="dna-node"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-text reveal">
+        <p class="section-label">// Who I Am</p>
+        <h2 class="section-title" style="margin-bottom:16px">The <em>Mind</em> Behind It</h2>
+        <div class="amber-rule"></div>
+        <p>
+          I'm a curious mind at the crossroads of science, technology, and deep time. 
+          Whether I'm digging through fossil records, designing circuits, writing algorithms, 
+          or dreaming up the next big invention — every project starts with one question: <em>What if?</em>
+        </p>
+        <p>
+          I believe dinosaurs are the greatest unsolved mystery in biology, that code is the closest thing 
+          we have to magic, and that DNA is the most elegant program ever written. My work tries to connect all of it.
+        </p>
+        <div class="about-tags">
+          <span class="about-tag">Paleontology</span>
+          <span class="about-tag">Machine Learning</span>
+          <span class="about-tag">CRISPR</span>
+          <span class="about-tag">Robotics</span>
+          <span class="about-tag">Chemistry</span>
+          <span class="about-tag">Entrepreneurship</span>
+          <span class="about-tag">Fossil Prep</span>
+          <span class="about-tag">Embedded Systems</span>
+          <span class="about-tag">Biotech</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <p class="section-label reveal">// Get In Touch</p>
+    <h2 class="section-title reveal">Let's <em>Collaborate</em></h2>
+    <p class="contact-sub reveal">
+      Whether you want to talk dinos, debug code, or brainstorm a world-changing idea — my inbox is open.
+    </p>
+    <a href="mailto:you@yoursite.com" class="contact-email reveal">you@yoursite.com</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">PROJECT<span>NEXUS</span></div>
+    <div class="footer-copy">© 2025 — Built with curiosity &amp; caffeine.</div>
+    <div class="footer-socials">
+      <a href="#">GitHub</a>
+      <a href="#">Twitter</a>
+      <a href="#">LinkedIn</a>
+    </div>
+  </footer>
+
+</div><!-- .page -->
+
+<script>
+/* ── Cursor ── */
+const cursorRing = document.getElementById('cursorRing');
+const cursorDot  = document.getElementById('cursorDot');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function animCursor(){
+  rx += (mx - rx) * .15; ry += (my - ry) * .15;
+  cursorRing.style.left = rx+'px'; cursorRing.style.top  = ry+'px';
+  cursorDot.style.left  = mx+'px'; cursorDot.style.top   = my+'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a,button,.proj-card,.cat-card,.filter-btn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ cursorRing.style.width='52px'; cursorRing.style.height='52px'; });
+  el.addEventListener('mouseleave',()=>{ cursorRing.style.width='32px'; cursorRing.style.height='32px'; });
+});
+
+/* ── Canvas Particle Network ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles=[];
+const N=80;
+
+function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const COLORS=['#e8920a','#3dffa0','#00d4f5','#b44fff'];
+function mkPart(){
+  return {
+    x: Math.random()*W, y: Math.random()*H,
+    vx:(Math.random()-.5)*.4, vy:(Math.random()-.5)*.4,
+    r: Math.random()*1.5+.5,
+    col: COLORS[Math.floor(Math.random()*COLORS.length)]
+  };
+}
+for(let i=0;i<N;i++) particles.push(mkPart());
+
+function drawCanvas(){
+  ctx.clearRect(0,0,W,H);
+  // lines between close particles
+  for(let i=0;i<N;i++){
+    for(let j=i+1;j<N;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<140){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle=`rgba(232,146,10,${(1-d/140)*.15})`;
+        ctx.lineWidth=.6;
+        ctx.stroke();
+      }
+    }
+  }
+  // dots
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.col+'88';
+    ctx.fill();
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0||p.x>W) p.vx*=-1;
+    if(p.y<0||p.y>H) p.vy*=-1;
+  });
+  requestAnimationFrame(drawCanvas);
+}
+drawCanvas();
+
+/* ── Filter ── */
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    document.querySelectorAll('.proj-card').forEach(card=>{
+      const cats=(card.dataset.cat||'').split(' ');
+      card.style.display=(f==='all'||cats.includes(f))?'flex':'none';
+    });
+  });
+});
+
+/* ── Scroll Reveal ── */
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
