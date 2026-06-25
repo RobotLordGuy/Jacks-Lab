@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Jacks Lab - Home</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">Jack's Lab</div>
+                <div class="nav-menu">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#projects" class="nav-link">Projects</a>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Welcome to Jack's Lab</h1>
+                <p>Exploring the intersection of engineering, science, and innovation</p>
+                <a href="#projects" class="cta-button">View Projects</a>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="projects-container">
+                <h2>My Projects</h2>
+                
+                <!-- Filter Buttons -->
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="engineering">Engineering</button>
+                    <button class="filter-btn" data-filter="dinosaur">Dinosaur/Paleontology</button>
+                    <button class="filter-btn" data-filter="geology">Geology</button>
+                    <button class="filter-btn" data-filter="business">Business</button>
+                    <button class="filter-btn" data-filter="biology">Biology</button>
+                </div>
+
+                <!-- Projects Grid -->
+                <div class="projects-grid js-projects-grid"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 Jack's Lab. All rights reserved.</p>
+        </footer>
+
+        <script src="projects-data.js"></script>
+        <script src="script.js"></script>
+    </body>
+</html>
