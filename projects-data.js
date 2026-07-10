@@ -87,5 +87,19 @@ const projects = [
             { label: 'Status', value: 'Ongoing' }
         ],
         github: 'https://github.com/RobotLordGuy/Jack-Pepper'
+    },
+    {
+        id: 6,
+        title: 'Simple Sensor & Alert Arduino',
+        thumbnail: 'thumbnails/project_7_thumbnail.jpeg',
+        field: 'engineering',
+        description: 'A very simple Arduino Project that uses an ultrasonic sensor and a green LED.',
+        longDescription: `In this project I created a new hybrid pepper called the Jack Pepper by crossing a Shishito pepper with a Cayenne pepper. I chose the Shishito because it is flavorful and produces many fruits per plant, and the Cayenne because it is large and spicy. My goal was to create a pepper that produces many large fruits with good flavor and a medium level of heat. To make the cross, I collected pollen from a flower on one pepper plant and transferred it to the stigma of a flower on the other plant. I also removed the petals and anthers from the flower receiving the pollen to prevent self-pollination. This process was repeated on multiple flowers on both plants to increase the chances of success. Because the fruit produced after pollination is not the hybrid itself, but contains hybrid seeds, I planted those seeds to grow the first generation of Jack Peppers. Since hybrid peppers are genetically unstable in the early generations, each generation can look different as traits separate and recombine. By selecting and breeding the best plants over multiple generations, the variety gradually becomes more consistent until around the seventh generation, when the plants begin producing stable offspring that represent the true Jack Pepper.`,
+        skills: ['C', 'C++', 'Arduino'],
+        details: [
+            { label: 'Field', value: 'Engineering' },
+            { label: 'Status', value: 'Completed' }
+        ],
+        github: 'https://github.com/RobotLordGuy/Simple-Arduino-Sensor-Output'
     }
 ];
