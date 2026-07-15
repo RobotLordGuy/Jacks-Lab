@@ -105,10 +105,10 @@ const projects = [
     {
         id: 7,
         title: 'Online Chess',
-        thumbnail: 'thumbnails/project_8_thumbnail.jpeg',
+        thumbnail: 'thumbnails/project_8_thumbnail.png',
         field: 'engineering',
         description: '2 player online chess.',
-        longDescription: `Very simple Arduino project, uses a HC-SR04 ultrasonic sensor to detect when something is close and then sends that signal to the Arduino to tell the LED to turn on.`,
+        longDescription: `In this project I created a web-based chess game that can be played directly in the browser. The game was programmed using HTML, CSS, and JavaScript. The player moves pieces by clicking on the board, and JavaScript enforces the official rules of chess by allowing only legal moves for each piece. The game keeps track of turns, captures, and the current board position while continuously checking for situations such as check, checkmate, and stalemate. The interface updates in real time as pieces move across the board, providing a smooth and interactive playing experience. This project demonstrates my ability to build a complex web application involving advanced game logic, rule validation, dynamic user interaction, and real-time updates.`,
         skills: ['HTML', 'CSS', 'JavaScript'],
         details: [
             { label: 'Field', value: 'Engineering' },
