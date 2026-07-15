@@ -101,5 +101,20 @@ const projects = [
             { label: 'Status', value: 'Completed' }
         ],
         github: 'https://github.com/RobotLordGuy/Simple-Arduino-Sensor-Output'
+    },
+    {
+        id: 7,
+        title: 'Online Chess',
+        thumbnail: 'thumbnails/project_8_thumbnail.jpeg',
+        field: 'engineering',
+        description: '2 player online chess.',
+        longDescription: `Very simple Arduino project, uses a HC-SR04 ultrasonic sensor to detect when something is close and then sends that signal to the Arduino to tell the LED to turn on.`,
+        skills: ['HTML', 'CSS', 'JavaScript'],
+        details: [
+            { label: 'Field', value: 'Engineering' },
+            { label: 'Status', value: 'Completed' }
+        ],
+        github: 'https://github.com/RobotLordGuy/chess',
+        projectLink: 'https://robotlordguy.github.io/chess/'
     }
 ];
